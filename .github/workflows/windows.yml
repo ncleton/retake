@@ -47,7 +47,7 @@ jobs:
         run: npx electron-builder --win nsis --x64 --publish never
       - name: Test de bout en bout (application installable)
         env:
-          REVUE_APP_EXECUTABLE: dist/win-unpacked/Revue.exe
+          REVUE_APP_EXECUTABLE: dist/win-unpacked/Retake.exe
           REVUE_TEST_VIDEO: test/media/video1.mp4
           REVUE_TEST_VIDEO2: test/media/video2.mp4
           REVUE_TEST_VOICE: test/fixtures/voix.wav
