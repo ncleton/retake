@@ -1,9 +1,9 @@
-# Revue
+# Retake
 
 Application Mac et Windows (Electron) de relecture vidéo. Le relecteur commente à l'image près en
 écrivant, en entourant une zone ou en parlant ; l'application produit une archive .zip (rapport
 Markdown, JSON et HTML, images annotées, commentaires vocaux WAV) que l'agent Montage vidéo traite avec
-le skill `revue-video`.
+le skill `retake`.
 
 ## Lancer en développement
 
@@ -31,5 +31,5 @@ Chromium à partir du WAV de `REVUE_TEST_VOICE` (créé avec `say` sur Mac, voir
     npm run dist:mac   # DMG Apple Silicon et Intel, signature ad hoc (pas de certificat Developer ID)
     npm run dist:win   # installateur NSIS x64
 
-Le dépôt privé `ncleton/revue-video` est une copie de ce dossier : son workflow GitHub Actions lance les
+Le dépôt public `ncleton/retake` est une copie de ce dossier : son workflow GitHub Actions lance les
 tests sur une machine Windows réelle et y fabrique l'installateur Windows natif.

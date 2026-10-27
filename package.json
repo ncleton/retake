@@ -1,8 +1,8 @@
 {
-  "name": "revue-video",
-  "productName": "Revue",
+  "name": "retake",
+  "productName": "Retake",
   "version": "1.0.0",
-  "description": "Lecteur de revue vidéo : notes horodatées, zones dessinées, notes vocales et rapport pour l'agent de montage.",
+  "description": "Retake : relecture vidéo à l'image près, commentaires écrits, zones entourées et commentaires vocaux, rapport pour l'agent de montage.",
   "author": "Nicolas Cléton",
   "license": "MIT",
   "main": "main.js",
@@ -16,9 +16,9 @@
     "fflate": "^0.8.3"
   },
   "build": {
-    "appId": "org.cleton.revuevideo",
-    "productName": "Revue",
-    "artifactName": "Revue-${version}-${os}-${arch}.${ext}",
+    "appId": "org.cleton.retake",
+    "productName": "Retake",
+    "artifactName": "Retake-${version}-${os}-${arch}.${ext}",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -37,11 +37,11 @@
       "identity": "-",
       "hardenedRuntime": false,
       "extendInfo": {
-        "NSMicrophoneUsageDescription": "Revue enregistre vos commentaires parlés pendant la relecture d’une vidéo."
+        "NSMicrophoneUsageDescription": "Retake enregistre vos commentaires parlés pendant la relecture d’une vidéo."
       }
     },
     "dmg": {
-      "title": "Revue ${version}"
+      "title": "Retake ${version}"
     },
     "win": {
       "icon": "build/icon.png",
@@ -58,8 +58,8 @@
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "shortcutName": "Revue",
-      "artifactName": "Revue-${version}-windows-x64-installation.${ext}"
+      "shortcutName": "Retake",
+      "artifactName": "Retake-${version}-windows-x64-installation.${ext}"
     }
   },
   "devDependencies": {

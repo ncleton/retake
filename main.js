@@ -140,7 +140,7 @@ async function exportReport(payload) {
   const { sha256, baseName, markdown, json, html, files, copyAssets } = payload;
   const dir = reviewDir(sha256);
   const settings = await readSettings();
-  const parent = settings.exportDir || path.join(app.getPath('documents'), 'Revues vidéo');
+  const parent = settings.exportDir || path.join(app.getPath('documents'), 'Retake');
   const folderName = safeName(baseName);
   const outDir = path.join(parent, folderName);
   await fsp.mkdir(outDir, { recursive: true });
@@ -220,7 +220,7 @@ function registerIpc() {
 async function importReport(file) {
   let data;
   try { data = JSON.parse(await fsp.readFile(file, 'utf8')); } catch (e) { throw new Error('Rapport illisible : ' + e.message); }
-  if (data.schema !== 'revue-video/1') throw new Error('Ce fichier n\'est pas un rapport de Revue vidéo (schéma attendu : revue-video/1).');
+  if (data.schema !== 'revue-video/1') throw new Error('Ce fichier n\'est pas un rapport de Retake (schéma attendu : revue-video/1).');
   const folder = path.dirname(file);
   const images = {};
   for (const n of data.notes || []) {
@@ -234,7 +234,7 @@ async function importReport(file) {
 function createWindow() {
   win = new BrowserWindow({
     width: 1480, height: 920, minWidth: 1080, minHeight: 680, show: false,
-    backgroundColor: '#f7f7f8', title: 'Revue',
+    backgroundColor: '#f7f7f8', title: 'Retake',
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false },
   });

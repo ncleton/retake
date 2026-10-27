@@ -1,4 +1,4 @@
-// Revue parlée : capture du micro, détection de la parole et découpe en notes vocales WAV.
+// Commentaires vocaux : capture du micro, détection de la parole et découpe en notes vocales WAV.
 const RATE = 16000;
 const CHUNK = 1024; // 64 ms à 16 kHz
 const CHUNK_SEC = CHUNK / RATE;
@@ -41,7 +41,7 @@ export class VoiceReview {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
     } catch (e) {
       const why = e && e.name === 'NotAllowedError'
-        ? 'L\'accès au micro est refusé. Autorisez « Revue vidéo » dans Réglages Système > Confidentialité et sécurité > Micro (Mac) ou Paramètres > Confidentialité > Microphone (Windows), puis réessayez.'
+        ? 'L\'accès au micro est refusé. Autorisez « Retake » dans Réglages Système > Confidentialité et sécurité > Micro (Mac) ou Paramètres > Confidentialité > Microphone (Windows), puis réessayez.'
         : e && e.name === 'NotFoundError' ? 'Aucun micro n\'est branché ou détecté sur cet ordinateur.' : 'Le micro n\'a pas pu démarrer : ' + (e && e.message ? e.message : e);
       throw new Error(why);
     }

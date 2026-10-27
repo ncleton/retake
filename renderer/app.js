@@ -155,7 +155,7 @@ async function loadVideo(info) {
   appEl.classList.replace('no-video', 'has-video');
   $('sendBtn').disabled = false; input.disabled = false; $('micBtn').disabled = false;
   $('fileName').textContent = info.fileName;
-  document.title = 'Revue · ' + info.fileName;
+  document.title = 'Retake · ' + info.fileName;
   video.playbackRate = S.settings.speed || 1;
   if (S.fps) seekFrame(0); else seekTime(0);
   const restored = S.review.draft; delete S.review.draft;
@@ -464,7 +464,7 @@ async function exportReport() {
     }
     const exportedAt = nowIso(); const d = new Date(exportedAt);
     const stamp = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + 'h' + String(d.getMinutes()).padStart(2, '0');
-    const baseName = 'Revue ' + S.review.video.fileName.replace(/\.[^.]+$/, '') + ' - ' + reviewer + ' - ' + stamp;
+    const baseName = 'Retake ' + S.review.video.fileName.replace(/\.[^.]+$/, '') + ' - ' + reviewer + ' - ' + stamp;
     const docs = buildDocuments({ review: S.review, appVersion: S.appVersion, exportedAt, notes, zipName: baseName + '.zip' });
     const res = await api.exportReport({ sha256: sha, baseName, markdown: docs.markdown, json: docs.json, html: docs.html, files, copyAssets });
     S.review.exports = [...(S.review.exports || []), { at: exportedAt, zipPath: res.zipPath, notes: notes.length }];

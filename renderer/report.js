@@ -92,7 +92,7 @@ export function buildDocuments({ review, appVersion, exportedAt, notes, zipName 
   });
 
   const json = {
-    schema: 'revue-video/1', app: { name: 'Revue', version: appVersion }, exportedAt, reviewer: review.reviewer,
+    schema: 'revue-video/1', app: { name: 'Retake', version: appVersion }, exportedAt, reviewer: review.reviewer,
     video: { fileName: v.fileName, sha256: v.sha256, sizeBytes: v.size, duration: round3(v.duration), fps, frameCount: v.frameCount, width: W, height: H, codec: v.codec || null, fpsSource: v.fpsSource },
     summary: { notes: notes.length, voiceClips: clipCount, previousNotesChecked: checked.length, fixed: fixedCount, notFixed },
     coordinates: 'Pixels de la vidéo d\'origine, origine en haut à gauche ; "normalized" donne les mêmes valeurs entre 0 et 1.',
@@ -100,7 +100,7 @@ export function buildDocuments({ review, appVersion, exportedAt, notes, zipName 
   };
 
   const md = [];
-  md.push('# Revue vidéo : ' + v.fileName, '');
+  md.push('# Retake : ' + v.fileName, '');
   let lead = 'Relu par ' + (review.reviewer || 'relecteur inconnu') + ' le ' + dateFr + '. ' + plural(notes.length, 'commentaire', 'commentaires') + '.';
   if (clipCount) lead += ' ' + plural(clipCount, 'commentaire vocal', 'commentaires vocaux') + ' à transcrire.';
   if (checked.length) lead += ' Vérification de la version précédente : ' + plural(fixedCount, 'point corrigé', 'points corrigés') + ', ' + plural(notFixed, 'point pas corrigé', 'points pas corrigés') + ', ' + (checked.length - fixedCount - notFixed) + ' non vérifié' + (checked.length - fixedCount - notFixed > 1 ? 's' : '') + '.';
@@ -113,7 +113,7 @@ export function buildDocuments({ review, appVersion, exportedAt, notes, zipName 
   md.push('| Résolution | ' + W + ' × ' + H + ' px |', '');
   md.push('## Consignes pour l\'agent de montage', '');
   md.push('1. Vérifie que l\'empreinte SHA-256 ci-dessus est celle de ton rendu. Si elle diffère, les instants ne correspondent pas : retrouve la bonne version avant de corriger.');
-  md.push('2. Si tu es l\'agent Montage vidéo, lance `python3 plugins/agent-montage-video/skills/revue-video/scripts/ingest_review.py <ce .zip>` : il vérifie l\'empreinte, transcrit les commentaires vocaux, compare chaque image au rendu et relie chaque commentaire à la scène et à la réplique.');
+  md.push('2. Si tu es l\'agent Montage vidéo, lance `python3 plugins/agent-montage-video/skills/retake/scripts/ingest_review.py <ce .zip>` : il vérifie l\'empreinte, transcrit les commentaires vocaux, compare chaque image au rendu et relie chaque commentaire à la scène et à la réplique.');
   md.push('3. Les commentaires vocaux (`audio/*.wav`) contiennent souvent l\'essentiel : transcris-les avant de décider quoi changer.');
   md.push('4. Le relecteur parle après avoir vu le problème. Pour un commentaire vocal sans repère, cherche aussi dans les 3 secondes qui précèdent l\'instant indiqué.');
   md.push('5. « Image n » est le numéro d\'image compté depuis 0. Pour l\'extraire : `ffmpeg -i <rendu> -vf "select=eq(n\\,N)" -fps_mode passthrough -frames:v 1 image.png`.');
@@ -140,7 +140,7 @@ export function buildDocuments({ review, appVersion, exportedAt, notes, zipName 
     md.push('![Commentaire ' + j.number + '](' + j.images.annotated + ')', '');
     md.push('Image sans annotation : `' + j.images.raw + '`' + (j.images.previousVersion ? ' · version précédente : `' + j.images.previousVersion + '`' : ''), '');
   });
-  md.push('---', 'Rapport produit par Revue ' + appVersion + '.' + (zipName ? ' Archive : ' + zipName + '.' : ''), '');
+  md.push('---', 'Rapport produit par Retake ' + appVersion + '.' + (zipName ? ' Archive : ' + zipName + '.' : ''), '');
 
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const cards = jsonNotes.map((j) => '<article><img src="' + j.images.annotated + '" alt=""><div><p class="t">' + j.number + ' · ' + esc(j.timecode) + (j.end ? ' → ' + esc(j.end.timecode) : '') +
@@ -150,11 +150,11 @@ export function buildDocuments({ review, appVersion, exportedAt, notes, zipName 
     j.clips.map((c) => '<audio controls src="' + c.file + '"></audio>').join('') +
     (j.shapes.length ? '<ul>' + j.shapes.map((s, k) => '<li>' + esc(describeShape(s, k)) + '</li>').join('') + '</ul>' : '') +
     '<p class="m">Image ' + fr(j.frame) + '</p></div></article>').join('\n');
-  const html = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Revue : ' + esc(v.fileName) + '</title><style>' +
+  const html = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Retake : ' + esc(v.fileName) + '</title><style>' +
     'body{font:15px/1.5 Inter,-apple-system,"Segoe UI",sans-serif;background:#f7f7f8;color:#0c0a09;margin:0;padding:40px}main{max-width:1100px;margin:auto}' +
     'h1{font-size:30px;font-weight:400;letter-spacing:-.02em;margin:0}.lead{color:#8a8a92;font-size:18px;margin:4px 0 28px}article{display:grid;grid-template-columns:480px 1fr;gap:22px;background:#fff;border:1px solid #ebebef;border-radius:18px;padding:16px;margin:0 0 14px}' +
     'article img{width:100%;border-radius:10px;display:block}.t{color:#8a8a92;margin:0 0 6px;font-variant-numeric:tabular-nums}.x{margin:0 0 8px;font-size:16px}.m{color:#8a8a92;font-size:13px;margin:4px 0}audio{width:100%;height:34px;margin:4px 0}ul{padding-left:18px;color:#57534e;font-size:13px}' +
-    '.st{font-weight:600}.st.corrige{color:#15a46b}.st.pas_corrige{color:#f0284a}@media(max-width:900px){article{grid-template-columns:1fr}}</style></head><body><main><h1>Revue : ' + esc(v.fileName) + '</h1><p class="lead">' +
+    '.st{font-weight:600}.st.corrige{color:#15a46b}.st.pas_corrige{color:#f0284a}@media(max-width:900px){article{grid-template-columns:1fr}}</style></head><body><main><h1>Retake : ' + esc(v.fileName) + '</h1><p class="lead">' +
     esc(review.reviewer || '') + ' · ' + esc(dateFr) + ' · ' + plural(notes.length, 'commentaire', 'commentaires') + '</p>' + cards + '</main></body></html>';
 
   const message = 'Voici ma revue de « ' + v.fileName + ' » : ' + plural(notes.length, 'commentaire', 'commentaires') + '. Le fichier ' + (zipName || 'joint') + ' contient tout (images et commentaires vocaux).';
