@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: windows
+            os: windows-latest
+            build: npx electron-builder --win nsis --x64 --publish never
+            app: dist/win-unpacked/Retake.exe
+            installers: dist/*.exe
+          - name: macos
+            os: macos-14
+            build: npx electron-builder --mac dmg --arm64 --x64 --publish never
+            app: dist/mac-arm64/Retake.app/Contents/MacOS/Retake
+            installers: dist/*.dmg
+    defaults:
+      run:
+        shell: bash
+    env:
+      REVUE_TEST_VIDEO: test/media/video1.mp4
+      REVUE_TEST_VIDEO2: test/media/video2.mp4
+      REVUE_TEST_VOICE: test/fixtures/voix.wav
+      REVUE_TEST_FRAME: '1200'
+      REVUE_TEST_FRAME_POINT: '300'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: ffmpeg (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: choco install ffmpeg -y --no-progress
+      - name: ffmpeg (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ffmpeg
+      - run: npm ci
+      - run: npm run check
+      - name: Vidéos de test
+        run: |
+          mkdir -p test/media
+          ffmpeg -v error -f lavfi -i "testsrc2=size=1920x1080:rate=60:duration=180" -f lavfi -i "sine=frequency=440:duration=180" -c:v libx264 -preset veryfast -pix_fmt yuv420p -c:a aac -shortest test/media/video1.mp4
+          ffmpeg -v error -f lavfi -i "testsrc=size=1280x720:rate=30:duration=40" -f lavfi -i "sine=frequency=330:duration=40" -c:v libx264 -preset veryfast -pix_fmt yuv420p -c:a aac -shortest test/media/video2.mp4
+      - name: Test de bout en bout (code source)
+        run: node test/e2e.mjs
+      - name: Précision à l'image près contre ffmpeg
+        env:
+          REVUE_TEST_FRAMES: '61,62,1574,5001,9000'
+        run: node test/precision.mjs && python test/check_frames.py
+      - name: Installateurs
+        run: ${{ matrix.build }}
+      - name: Test de bout en bout (application installable)
+        env:
+          REVUE_APP_EXECUTABLE: ${{ matrix.app }}
+        run: node test/e2e.mjs
+      - name: Captures
+        if: always()
+        run: mkdir -p captures && cp test/out/*.png captures/ || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: captures-${{ matrix.name }}
+          path: captures
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: installateurs-${{ matrix.name }}
+          path: ${{ matrix.installers }}
+          if-no-files-found: error
+
+  release:
+    name: release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: installateurs-*
+          path: release
+          merge-multiple: true
+      - name: Notes de version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '$0 ~ "^## " v { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "CHANGELOG.md ne contient pas de section $version" >&2; exit 1; }
+          cat docs/installation-release.md >> notes.md
+      - name: Publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" release/* --title "Retake ${GITHUB_REF_NAME#v}" --notes-file notes.md --verify-tag

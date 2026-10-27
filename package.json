@@ -8,9 +8,10 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "check": "node scripts/check.mjs",
     "test": "node test/e2e.mjs",
-    "dist:mac": "electron-builder --mac dmg zip --arm64 --x64",
-    "dist:win": "electron-builder --win nsis --x64"
+    "dist:mac": "electron-builder --mac dmg --arm64 --x64 --publish never",
+    "dist:win": "electron-builder --win nsis --x64 --publish never"
   },
   "dependencies": {
     "fflate": "^0.8.3"
@@ -66,5 +67,13 @@
     "electron": "^45.0.0",
     "electron-builder": "^26.18.0",
     "playwright": "^1.64.1"
+  },
+  "homepage": "https://github.com/ncleton/retake",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ncleton/retake.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ncleton/retake/issues"
   }
 }

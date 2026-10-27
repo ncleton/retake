@@ -2,4 +2,7 @@ node_modules/
 dist/
 test/out/
 test/media/
-ci-captures/
+test/*.log
+test/fixtures/*.aiff
+captures/
+.DS_Store

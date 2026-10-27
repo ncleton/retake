@@ -1,35 +1,60 @@
 # Retake
 
-Application Mac et Windows (Electron) de relecture vidéo. Le relecteur commente à l'image près en
-écrivant, en entourant une zone ou en parlant ; l'application produit une archive .zip (rapport
-Markdown, JSON et HTML, images annotées, commentaires vocaux WAV) que l'agent Montage vidéo traite avec
-le skill `retake`.
+Retake sert à relire une vidéo et à dire précisément ce qui ne va pas, sans noter de minutage. Le relecteur
+écrit, entoure une zone ou parle : chaque commentaire se cale tout seul sur l'image affichée, à l'image près.
+À la fin, un bouton produit un seul fichier .zip, prêt à être traité par la personne ou l'agent qui a monté la vidéo.
 
-## Lancer en développement
+![Commenter en entourant une zone](docs/captures/zone-et-texte.jpg)
 
-    npm install
-    npm start
+## Télécharger
 
-## Ce qui garantit le calage à l'image près
+Les installateurs Mac (puce Apple et Intel) et Windows sont dans la [dernière version](https://github.com/ncleton/retake/releases/latest).
+Le [guide d'utilisation](docs/guide.md) explique l'installation et chaque geste.
 
-- La cadence et le nombre d'images sont lus dans le conteneur MP4 (table `stts`, `lib/mp4info.js`).
-- L'image affichée est suivie avec `requestVideoFrameCallback` ; une pause recale la lecture sur une
-  image entière, et l'image enregistrée est celle qui est à l'écran.
-- `test/precision.mjs` puis `test/check_frames.py` comparent les images capturées aux images n-2 à n+2
-  extraites par ffmpeg.
+## Ce que fait Retake
 
-## Tests
+- **Écrire** : taper dans la zone de commentaire met la vidéo en pause et cale le commentaire sur l'image affichée.
+- **Entourer** : un rectangle tracé sur l'image, ou un clic sur un point précis, montre l'endroit exact.
+- **Parler** : une fois le micro activé, il suffit de parler. La vidéo se met en pause, la phrase est enregistrée,
+  puis la lecture reprend.
+- **Vérifier une nouvelle version** : on importe la revue précédente et on marque chaque point Corrigé ou Pas corrigé.
 
-    REVUE_TEST_VIDEO=<rendu.mp4> REVUE_TEST_VIDEO2=<autre.mp4> REVUE_TEST_VOICE=test/fixtures/voix.wav node test/e2e.mjs
-    REVUE_TEST_VIDEO=<rendu.mp4> REVUE_TEST_FRAMES=828,1574,1859 node test/precision.mjs && python3 test/check_frames.py
+| Commentaires | Commentaire vocal | Envoi |
+|---|---|---|
+| ![](docs/captures/commentaires.jpg) | ![](docs/captures/commentaire-vocal.jpg) | ![](docs/captures/envoi.jpg) |
 
-`REVUE_APP_EXECUTABLE` lance les mêmes tests sur l'application empaquetée. Le micro est simulé par
-Chromium à partir du WAV de `REVUE_TEST_VOICE` (créé avec `say` sur Mac, voir le skill).
+## Le fichier envoyé
 
-## Installateurs
+L'archive .zip contient :
 
-    npm run dist:mac   # DMG Apple Silicon et Intel, signature ad hoc (pas de certificat Developer ID)
-    npm run dist:win   # installateur NSIS x64
+- `rapport.md`, un rapport pensé pour l'agent de montage, avec des consignes de traitement ;
+- `rapport.json`, les mêmes données structurées : instant, numéro d'image, zones en pixels, statuts ;
+- `rapport.html`, une page lisible dans un navigateur ;
+- les images annotées et brutes en pleine résolution ;
+- les commentaires vocaux en WAV.
 
-Le dépôt public `ncleton/retake` est une copie de ce dossier : son workflow GitHub Actions lance les
-tests sur une machine Windows réelle et y fabrique l'installateur Windows natif.
+Le rapport contient l'empreinte SHA-256 de la vidéo relue : celui qui corrige vérifie ainsi qu'il travaille sur
+exactement la même version.
+
+## Confidentialité
+
+Retake ne se connecte à aucun service. Les vidéos et les commentaires restent sur l'ordinateur jusqu'à ce que le
+relecteur envoie lui-même le fichier .zip. Le micro n'est utilisé que lorsqu'il est activé.
+
+## Développement
+
+    npm ci
+    npm start          # lancer l'application
+    npm run check      # syntaxe et cohérence de version
+    npm test           # test de bout en bout (variables dans AGENTS.md)
+    npm run dist:mac   # DMG Apple Silicon et Intel
+    npm run dist:win   # installateur Windows
+
+Chaque modification est testée par GitHub Actions sur Windows et sur Mac, sur le code puis sur l'application
+installée. Un test compare aussi les images enregistrées à celles extraites par ffmpeg pour garantir le calage à
+l'image près. Publier un tag `vX.Y.Z` fabrique et publie les installateurs de la version.
+
+## Maintenance
+
+Retake est maintenu par Codex pour Nicolas Cléton. Voir [CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md)
+et [SECURITY.md](SECURITY.md). Licence MIT.

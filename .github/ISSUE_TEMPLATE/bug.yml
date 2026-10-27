@@ -1,0 +1,30 @@
+name: Problème
+description: Quelque chose ne marche pas comme prévu
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Ce qui se passe
+      description: Ce que tu as fait, ce que tu attendais, ce qui s'est passé.
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Système
+      options: [Mac avec puce Apple, Mac Intel, Windows]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version de Retake
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: textarea
+    id: more
+    attributes:
+      label: Détails utiles
+      description: Message d'erreur exact, format de la vidéo, capture d'écran.

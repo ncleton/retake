@@ -7,9 +7,9 @@ tout seul sur l'image affichée : inutile de noter les minutes. À la fin, un bo
 
 ## Installer
 
-**Mac récent (puce Apple M1, M2, M3, M4…)** : ouvre `Retake-1.0.0-mac-arm64.dmg`.
+**Mac récent (puce Apple M1, M2, M3, M4…)** : télécharge `Retake-…-mac-arm64.dmg` dans la [dernière version](https://github.com/ncleton/retake/releases/latest).
 
-**Mac plus ancien (processeur Intel)** : ouvre `Retake-1.0.0-mac-x64.dmg`.
+**Mac plus ancien (processeur Intel)** : télécharge `Retake-…-mac-x64.dmg`.
 
 En cas de doute : menu Pomme > Informations système > « Puce » (Apple) ou « Processeur » (Intel).
 
@@ -19,7 +19,7 @@ En cas de doute : menu Pomme > Informations système > « Puce » (Apple) ou « 
 3. Ouvre Réglages Système > Confidentialité et sécurité, descends jusqu'au message sur Retake et clique
    sur « Ouvrir quand même », puis confirme. Cette étape n'est à faire qu'une fois.
 
-**Windows** : lance `Retake-1.0.0-windows-x64-installation.exe`. Si Windows affiche « Windows a protégé
+**Windows** : lance `Retake-…-windows-x64-installation.exe`. Si Windows affiche « Windows a protégé
 votre ordinateur », clique sur « Informations complémentaires » puis « Exécuter quand même ».
 
 Ces avertissements viennent du fait que l'application n'est pas vendue sur une boutique ; ils
