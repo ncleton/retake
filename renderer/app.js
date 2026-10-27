@@ -358,7 +358,7 @@ function onSpeechStart() {
     const d = ensureDraft('voix');
     S.clipAnchor = { time: d.time, frame: d.frame };
   }
-  pill('Je vous écoute…', { rec: true });
+  pill('Enregistrement de votre commentaire…', { rec: true });
 }
 async function onSpeechClip(clip) {
   const sha = S.review.video.sha256;

@@ -8,7 +8,9 @@ tout seul sur l'image affichée : inutile de noter les minutes. À la fin, un bo
 ## Installer
 
 **Mac récent (puce Apple M1, M2, M3, M4…)** : ouvre `Revue-1.0.0-mac-arm64.dmg`.
+
 **Mac plus ancien (processeur Intel)** : ouvre `Revue-1.0.0-mac-x64.dmg`.
+
 En cas de doute : menu Pomme > Informations système > « Puce » (Apple) ou « Processeur » (Intel).
 
 1. Glisse l'icône Revue dans le dossier Applications.
