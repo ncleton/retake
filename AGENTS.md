@@ -27,7 +27,8 @@ revues côté agent vit dans le skill `retake` du dépôt `agent-montage-video`.
 
 `REVUE_APP_EXECUTABLE` relance le test sur l'application empaquetée. Choisir pour la précision des images en
 mouvement, où deux images voisines diffèrent ; sur un plan fixe le contrôle ne prouve rien. Le WAV de voix
-s'obtient sur Mac avec `say -v Jacques`, comme décrit dans `test/fixtures`.
+`test/fixtures/voix.wav` a été créé sur Mac avec `say -v Jacques` puis ffmpeg (2 s de silence, la phrase,
+12 s de silence).
 
 La CI (`.github/workflows/ci.yml`) exécute tout cela sur Windows et sur Mac, sur le code puis sur l'application
 installée. Les contrôles requis sur `main` sont `windows` et `macos`.
