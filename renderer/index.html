@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self' blob:">
+<title>Revue</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app" class="no-video">
+  <header class="topbar">
+    <div class="brand"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>revue</div>
+    <div class="file" id="fileName"></div>
+    <div class="actions">
+      <button class="pill outline" id="openBtn2">Ouvrir une vidéo</button>
+      <button class="pill primary" id="sendBtn" disabled>Envoyer la revue</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="player">
+      <div class="stage-card">
+        <div class="stage" id="stage">
+          <video id="video" preload="auto" playsinline></video>
+          <canvas id="overlay"></canvas>
+          <div class="float-pill" id="floatPill" hidden><span class="rec-dot" id="recDot" hidden></span><span id="floatText"></span><button class="float-link" id="floatAction" hidden></button></div>
+        </div>
+        <div class="welcome" id="welcome">
+          <div class="welcome-inner">
+            <h1>Relisez une vidéo</h1>
+            <p class="sub">Commentez à l'image près, en écrivant, en entourant ou en parlant.</p>
+            <button class="pill primary big" id="openBtn">Choisir une vidéo</button>
+            <p class="drop-hint">ou glissez-la dans cette fenêtre</p>
+            <div class="steps">
+              <div><span>1</span><p><b>Regardez</b>Dès que quelque chose ne va pas, écrivez-le, dites-le ou entourez la zone sur l'image.</p></div>
+              <div><span>2</span><p><b>C'est calé tout seul</b>Chaque commentaire est rattaché à l'image affichée. Rien à noter.</p></div>
+              <div><span>3</span><p><b>Envoyez la revue</b>Un seul fichier à transmettre, avec les images et vos commentaires vocaux.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="transport" id="transport">
+        <div class="controls">
+          <button class="icon-btn" id="prevBtn" title="Image précédente (flèche gauche)" aria-label="Image précédente"><svg viewBox="0 0 24 24"><path d="M7 5v14M19 5 10 12l9 7z"/></svg></button>
+          <button class="icon-btn play" id="playBtn" title="Lecture ou pause (Espace)" aria-label="Lecture ou pause"><svg viewBox="0 0 24 24" class="i-play"><path d="M7 4.8v14.4L19 12z"/></svg><svg viewBox="0 0 24 24" class="i-pause"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></svg></button>
+          <button class="icon-btn" id="nextBtn" title="Image suivante (flèche droite)" aria-label="Image suivante"><svg viewBox="0 0 24 24"><path d="M17 5v14M5 5l9 7-9 7z"/></svg></button>
+          <div class="time"><span id="timeNow">00:00</span><span class="total" id="timeTotal"> / 00:00</span></div>
+          <div class="grow"></div>
+          <button class="text-btn" id="speedBtn" title="Vitesse de lecture">1×</button>
+          <button class="icon-btn" id="muteBtn" title="Couper le son" aria-label="Couper le son"><svg viewBox="0 0 24 24" class="i-vol"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4zM15.5 9.5a3.5 3.5 0 0 1 0 5M18 7a7 7 0 0 1 0 10"/></svg><svg viewBox="0 0 24 24" class="i-mute"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4zM16 10l4 4M20 10l-4 4"/></svg></button>
+        </div>
+        <div class="timeline" id="timeline">
+          <div class="dots" id="dots"></div>
+          <div class="track"><div class="played" id="played"></div></div>
+          <div class="head" id="head"></div>
+          <div class="peek" id="peek" hidden><canvas id="peekCanvas" width="176" height="99"></canvas><span id="peekTime"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-head">
+        <h2>Commentaires</h2>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="list" id="list"></div>
+      <div class="composer" id="composer">
+        <div class="anchor" id="anchor"></div>
+        <div class="box" id="box">
+          <textarea id="input" rows="1" placeholder="Ouvrez une vidéo pour commenter" disabled></textarea>
+          <button class="mic" id="micBtn" title="Commenter à voix haute" aria-label="Commenter à voix haute" disabled><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></button>
+        </div>
+        <p class="help" id="help">Entrée pour ajouter · dessinez sur la vidéo pour montrer une zone</p>
+      </div>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast" hidden><span id="toastText"></span><button class="toast-link" id="toastAction" hidden></button></div>
+
+  <div class="modal" id="sendModal" hidden>
+    <div class="modal-card">
+      <div id="sendAsk">
+        <h3>Envoyer la revue</h3>
+        <p class="muted" id="sendCount"></p>
+        <label class="field">Votre prénom<input id="nameInput" type="text" placeholder="Par exemple Tony" spellcheck="false"></label>
+        <div class="modal-actions"><button class="pill outline" id="sendCancel">Annuler</button><button class="pill primary" id="sendGo">Créer le fichier</button></div>
+      </div>
+      <div id="sendDone" hidden>
+        <div class="done-ico" aria-hidden="true"></div>
+        <h3>Votre revue est prête</h3>
+        <p class="muted">Envoyez ce fichier tel quel, par e-mail ou par message. Il contient vos commentaires, les images et vos commentaires vocaux.</p>
+        <p class="path" id="sendPath"></p>
+        <div class="modal-actions"><button class="pill outline" id="copyBtn">Copier le message</button><button class="pill primary" id="revealBtn">Afficher le fichier</button></div>
+        <button class="close-link" id="sendClose">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+<video id="peekVideo" preload="auto" muted hidden></video>
+<script type="module" src="app.js"></script>
+</body>
+</html>
